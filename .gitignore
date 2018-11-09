@@ -1,0 +1,7 @@
+/bin
+/obj
+/.vs
+/webapp.csproj.user
+/wallet_test/bin
+/wallet_test/obj
+/wallet_test/neo-ts
