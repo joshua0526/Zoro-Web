@@ -93,7 +93,7 @@ namespace what
             this.address = ThinNeo.Helper.GetAddressFromPublicKey(this.pubkey);
             this.keylist.textContent = "";
             this.spanKey.textContent = "usekey= " + this.address;
-            var btn = lightsPanel.QuickDom.addButton(this.keylist, "refresh UTXO");
+            var btn = lightsPanel.QuickDom.addButton(this.keylist, "refresh NEP5");
             btn.onclick = () =>
             {
                 this.main.panelUTXO.refresh();

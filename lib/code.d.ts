@@ -7,6 +7,7 @@ declare namespace what {
         panelTransaction: panel_Transaction;
         panelUTXO: panel_UTXO;
         panelSign: panel_Sign;
+        panelAppChain: panel_AppChain;
         start(): Promise<void>;
         update(): void;
     }
@@ -21,7 +22,7 @@ declare namespace lightsPanel {
         H_Left = 0,
         H_Right = 1,
         V_Top = 2,
-        V_Bottom = 3,
+        V_Bottom = 3
     }
     class panel implements IPanel {
         container: panelContainer;
@@ -94,11 +95,11 @@ declare namespace lightsPanel {
         floatPanel(panel: panel): void;
         removePanel(panel: panel): void;
         fillPanel(panel: panel): void;
-        private _moveTop(divsrc);
-        private _initOverDiv();
-        private pickOverLay(cx, cy);
-        private testOverlay(usedock, cx, cy);
-        private _inbox(panel, cx, cy);
+        private _moveTop;
+        private _initOverDiv;
+        private pickOverLay;
+        private testOverlay;
+        private _inbox;
         _setDockPos(div: HTMLDivElement, x: string, y: string, r: string, b: string): void;
         _calcRootPos(div: HTMLDivElement): {
             x: number;
@@ -158,15 +159,34 @@ declare namespace lightsPanel {
         private nodeRoot;
         onSelectItem: (txt: string, data: any) => void;
         private selectItem;
-        private onSelect(node);
+        private onSelect;
         makeSelectEvent(node: treeNode): void;
         updateData(filter: ITreeViewFilter): void;
     }
 }
 declare namespace what {
+    class panel_AppChain {
+        constructor();
+        panel: lightsPanel.panel;
+        main: Main;
+        init(main: Main): void;
+        initAppChain(): void;
+    }
+}
+declare namespace what {
+    class panel_UTXO {
+        constructor();
+        panel: lightsPanel.panel;
+        main: Main;
+        spanBCPHeight: HTMLSpanElement;
+        init(main: Main): Promise<void>;
+        refresh(): Promise<void>;
+    }
+}
+declare namespace what {
     enum FuncTag {
         transfer = 0,
-        DApp_WhoAmI = 1,
+        DApp_WhoAmI = 1
     }
     class panel_Function {
         constructor();
@@ -209,8 +229,15 @@ declare namespace what {
         spanAPIHeight: HTMLSpanElement;
         spanRPC: HTMLSpanElement;
         spanRPCHeight: HTMLSpanElement;
+        select: HTMLSelectElement;
+        chainHash: string;
+        selectIndex: number;
         init(main: Main): void;
         update(): Promise<void>;
+        selectClear(): void;
+        updateAppChain(): Promise<void>;
+        initAppChain(): Promise<void>;
+        updateHeight(): Promise<void>;
     }
 }
 declare namespace what {
@@ -223,23 +250,14 @@ declare namespace what {
     }
 }
 declare namespace what {
-    class panel_UTXO {
-        constructor();
-        panel: lightsPanel.panel;
-        main: Main;
-        tree: lightsPanel.treeView;
-        assets: {
-            [id: string]: UTXO[];
+    class AppChainTool {
+        static chainName2Hash: {
+            [id: string]: string;
         };
-        init(main: Main): Promise<void>;
-        refresh(): Promise<void>;
-    }
-    class UTXO {
-        addr: string;
-        txid: string;
-        n: number;
-        asset: string;
-        count: Neo.Fixed8;
+        static appChainLength: number;
+        static initAllAppChain(): Promise<{
+            [id: string]: string;
+        }>;
     }
 }
 declare namespace what {
@@ -253,9 +271,7 @@ declare namespace what {
             [id: string]: string;
         };
         static initAllAsset(): Promise<void>;
-        static makeTran(utxos: {
-            [id: string]: UTXO[];
-        }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): ThinNeo.Transaction;
+        static makeTran(utxos: {}, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): ThinNeo.Transaction;
     }
 }
 declare namespace what {
@@ -263,13 +279,19 @@ declare namespace what {
         static api: string;
         static rpc: string;
         static rpcName: string;
+        static blockHeight: number;
+        static chainHashLength: number;
+        static ContractHash: string;
         static makeRpcUrl(url: string, method: string, ..._params: any[]): string;
         static makeRpcPostBody(method: string, ..._params: any[]): {};
-        static api_getHeight(): Promise<number>;
+        static api_getHeight(chainHash: string): Promise<number>;
         static api_getAllAssets(): Promise<any>;
         static api_getUTXO(address: string): Promise<any>;
+        static api_getAllAppChain(): Promise<any>;
+        static api_getAppChainName(chainHash: string): Promise<any>;
         static rpc_getHeight(): Promise<number>;
         static rpc_postRawTransaction(data: Uint8Array): Promise<boolean>;
         static rpc_getStorage(scripthash: Uint8Array, key: Uint8Array): Promise<string>;
+        static rpc_getBalanceOf(chainHash: string, address: string): Promise<any>;
     }
 }

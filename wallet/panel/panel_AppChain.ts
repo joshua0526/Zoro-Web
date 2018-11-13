@@ -31,6 +31,12 @@ namespace what
             lightsPanel.QuickDom.addSpan(this.panel, "Chain Hash");
             var select = document.createElement("select");
             this.panel.divContent.appendChild(select);
+            for (var chainName in AppChainTool.chainName2Hash){
+                var sitem = document.createElement("option");
+                sitem.text = chainName;
+                select.appendChild(sitem);
+            }
+            lightsPanel.QuickDom.addElement(this.panel, "br");
         }
     }
 }

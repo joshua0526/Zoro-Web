@@ -10,8 +10,7 @@ namespace what
         }
         panel: lightsPanel.panel;
         main: Main;
-        tree: lightsPanel.treeView;
-        assets: { [id: string]: UTXO[] }
+        spanBCPHeight:HTMLSpanElement;
         async init(main: Main)
         {
             this.main = main;
@@ -27,87 +26,14 @@ namespace what
             this.panel.onFloat();
             this.panel.divContent.textContent = "";
 
-            this.tree = new lightsPanel.treeView(this.panel);
+            this.spanBCPHeight = lightsPanel.QuickDom.addSpan(this.panel, "");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
         }
 
         async refresh()
         {
-            var utxos = await WWW.api_getUTXO(this.main.panelLoadKey.address);
-            this.assets = {};
-            for (var i in utxos)
-            {
-                var item = utxos[i];
-                var txid = item.txid;
-                var n = item.n;
-                var asset = item.asset;
-                var count = item.value;
-                if (this.assets[asset] == undefined)
-                {
-                    this.assets[asset] = [];
-                }
-                var utxo = new UTXO();
-                utxo.addr = item.addr;
-                utxo.asset = asset;
-                utxo.n = n;
-                utxo.txid = txid;
-                utxo.count = Neo.Fixed8.parse(count);
-                this.assets[asset].push(utxo);
-            }
-
-            this.tree.updateData(new Filter(this.assets));
+            var Nep5 = await WWW.rpc_getBalanceOf(this.main.panelState.chainHash, this.main.panelLoadKey.address);
+            this.spanBCPHeight.textContent = "BCP=" + Nep5;
         }
     }
-    export class UTXO
-    {
-        addr: string;
-        txid: string;
-        n: number;
-        asset: string;
-        count: Neo.Fixed8;
-    }
-    class Filter implements lightsPanel.ITreeViewFilter
-    {
-
-        assets: { [id: string]: UTXO[] };
-        constructor(assets: { [id: string]: UTXO[] })
-        {
-            this.assets = assets;
-        }
-        getChildren(rootObj: any): { name: string, txtcolor: string }[]
-        {
-            if (rootObj == null)
-            {
-                var item = [];
-                for (var asset in this.assets)
-                {
-                    var name = CoinTool.assetID2name[asset];
-                    var count: Neo.Fixed8 = Neo.Fixed8.Zero;
-                    for (var i in this.assets[asset])
-                    {
-                        var utxo = this.assets[asset][i] as UTXO;
-                        count = count.add(utxo.count);
-                    }
-                    item.push({ "name": name + " count=" + count.toString(), "txtcolor": "FFF", "asset": asset })
-                }
-                return item;
-            }
-            else
-            {
-                if (rootObj["asset"] != undefined)
-                {
-                    var utxos = this.assets[rootObj["asset"]];
-                    var item = [];
-                    for (var i in utxos)
-                    {
-                        var utxo = utxos[i] as UTXO;
-                        item.push({ "name": utxo.count, "txtcolor": "FFF", "asset": asset })
-                    }
-                    return item;
-                }
-
-                return [];
-            }
-        }
-    }
-
 }

@@ -38,7 +38,7 @@
         }
 
         
-        static makeTran(utxos: { [id: string]: UTXO[] }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): ThinNeo.Transaction
+        static makeTran(utxos: {}, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): ThinNeo.Transaction
         {
             //if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
             //    throw new Error("can not send zero.");
@@ -60,8 +60,6 @@
             for (var i = 0; i < us.length; i++)
             {
                 var input = new ThinNeo.TransactionInput();
-                input.hash = us[i].txid.hexToBytes().reverse();
-                input.index = us[i].n;
                 input["_addr"] = us[i].addr;//利用js的隨意性，臨時傳個值
                 tran.inputs.push(input);
                 count = count.add(us[i].count);

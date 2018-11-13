@@ -2,9 +2,14 @@
 {
     export class WWW
     {
-        static api: string = "https://api.nel.group/api/testnet";
-        static rpc: string = "http://47.96.168.8:20332/testnet";
+        static api: string = "http://115.159.53.39:20332/";
+        static rpc: string = "http://115.159.53.39:20332/";
         static rpcName: string = "";
+
+        static blockHeight:number = 0;
+        static chainHashLength:number = 1;
+        static ContractHash:string = "c4108917282bff79b156d4d01315df811790c0e8";
+
         static makeRpcUrl(url: string, method: string, ..._params: any[])
         {
 
@@ -38,13 +43,13 @@
         }
 
 
-        static async  api_getHeight()
+        static async api_getHeight(chainHash:string)
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getblockcount");
+            var str = WWW.makeRpcUrl(WWW.api, "getblockcount", chainHash);
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
             var r = json["result"];
-            var height = parseInt(r[0]["blockcount"] as string) - 1;
+            var height = parseInt(r as string) - 1;
             return height;
         }
         static async api_getAllAssets()
@@ -62,14 +67,21 @@
             var json = await result.json();
             var r = json["result"];
             return r;
-
         }
 
         static async api_getAllAppChain(){
             var str = WWW.makeRpcUrl(WWW.api, "getappchainhashlist");
             var result = await fetch(str, {"method":"get"});
             var json = await result.json();
-            var r = json["result"];
+            var r = json["result"]["hashlist"];
+            return r;
+        }
+
+        static async api_getAppChainName(chainHash:string){
+            var str = WWW.makeRpcUrl(WWW.api, "getappchainstate", chainHash);
+            var result = await fetch(str, {"method":"get"});
+            var json = await result.json();
+            var r = json["result"]["name"];
             return r;
         }
 
@@ -99,6 +111,27 @@
                 return null;
             var r = json["result"][0] as string;
             return r["storagevalue"];
+        }
+
+        static async rpc_getBalanceOf(chainHash:string, address:string){
+            var sb = new ThinNeo.ScriptBuilder();
+            var array = [];
+            array.push("(addr)" + address);             
+            sb.EmitParamJson(array);
+            sb.EmitPushString("balanceOf");
+            sb.EmitAppCall(WWW.ContractHash.hexToBytes().reverse());
+            
+            var scripthash = sb.ToArray().toHexString();
+            var str = this.makeRpcUrl(WWW.api, "invokescript", chainHash, scripthash);
+            var result = await fetch(str, {"method":"get"});
+            var json = await result.json();
+            var r = json["result"]["stack"][0]["value"];           
+            if (r == ""){
+                r = 0;
+            }else{
+                r = ThinNeo.Helper.Bytes2String(r.hexToBytes());
+            }
+            return r;
         }
     }
 }
