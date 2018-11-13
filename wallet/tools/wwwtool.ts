@@ -129,9 +129,10 @@
             if (r == ""){
                 r = 0;
             }else{
-                r = ThinNeo.Helper.Bytes2String(r.hexToBytes());
+                r = (r as string).hexToBytes();
+                r = Neo.BigInteger.fromUint8ArrayAutoSign(r);
             }
             return r;
-        }
+        }    
     }
 }

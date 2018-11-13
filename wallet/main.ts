@@ -49,7 +49,6 @@ namespace what
         var main = new Main();
         main.start();
 
-
     }
 
 }
