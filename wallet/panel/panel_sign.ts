@@ -89,7 +89,20 @@ namespace what
                 var btn = lightsPanel.QuickDom.addButton(this.panel, "boardcast it.")
                 btn.onclick = async () =>
                 {
-                    var result = await WWW.rpc_postRawTransaction(tran.GetRawData());
+                    var data = tran.GetRawData();
+                    var rawData = ThinNeo.Helper.Bytes2String(data);
+                    var result;
+                    if (this.main.panelState.chainHash.length > 0) {
+                        var postRawArray = [];
+                        postRawArray.push(this.main.panelState.chainHash);
+                        postRawArray.push(rawData);
+                        result = await WWW.rpc_postRawTransaction(postRawArray.toString());
+                    }else{
+                        var postArray = [];
+                        postArray.push(rawData);
+                        result = await WWW.rpc_postRawTransaction(postArray.toString());
+                    }
+                    
                     if (result as boolean == true)
                     {
                         alert("txid=" + txid);
