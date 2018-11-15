@@ -8,96 +8,78 @@
         static name2assetID: { [id: string]: string } = {};
         static async initAllAsset()
         {
-            var allassets = await WWW.api_getAllAssets();
-            for (var a in allassets)
-            {
-                var asset = allassets[a];
-                var names = asset.name;
-                var id = asset.id;
-                var name: string = "";
-                if (id == CoinTool.id_GAS)
-                {
-                    name = "GAS";
-                }
-                else if (id == CoinTool.id_NEO)
-                {
-                    name = "NEO";
-                }
-                else
-                {
-                    for (var i in names)
-                    {
-                        name = names[i].name;
-                        if (names[i].lang == "en")
-                            break;
-                    }
-                }
-                CoinTool.assetID2name[id] = name;
-                CoinTool.name2assetID[name] = id;
-            }
+            // var allassets = await WWW.api_getAllAssets();
+            // for (var a in allassets)
+            // {
+            //     var asset = allassets[a];
+            //     var names = asset.name;
+            //     var id = asset.id;
+            //     var name: string = "";
+            //     if (id == CoinTool.id_GAS)
+            //     {
+            //         name = "GAS";
+            //     }
+            //     else if (id == CoinTool.id_NEO)
+            //     {
+            //         name = "NEO";
+            //     }
+            //     else
+            //     {
+            //         for (var i in names)
+            //         {
+            //             name = names[i].name;
+            //             if (names[i].lang == "en")
+            //                 break;
+            //         }
+            //     }
+            //     CoinTool.assetID2name[id] = name;
+            //     CoinTool.name2assetID[name] = id;
+            // }
+            CoinTool.name2assetID["BCP"] = WWW.ContractHash; 
         }
 
         
-        static makeTran(utxos: {}, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): ThinNeo.Transaction
+        static makeTran(address:string, targetaddr:string, sendcount:Neo.Fixed8, assetid:string, chainHash:string): ThinNeo.Transaction
         {
-            //if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
-            //    throw new Error("can not send zero.");
-            var tran = new ThinNeo.Transaction();
+            if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
+               throw new Error("can not send zero.");           
+            
+            var sb = new ThinNeo.ScriptBuilder();
+            var array = [];
+           
+            var randomBytes = new Uint8Array(32);            
+            var key = Neo.Cryptography.RandomNumberGenerator.getRandomValues<Uint8Array>(randomBytes);
+            var randomNum = new Neo.BigInteger(key);
+            sb.EmitPushNumber(randomNum);
+            sb.Emit(ThinNeo.OpCode.DROP);
+            array.push("(addr)" + address);
+            array.push("(addr)" + targetaddr);
+            array.push("(int)" + sendcount);
+            sb.EmitParamJson(array);
+            sb.EmitPushString("transfer");
+            sb.EmitAppCall(assetid.hexToBytes().reverse());
+            var scripthash = sb.ToArray().toHexString();
+
+            var postArray = [];
+            postArray.push(chainHash);
+            postArray.push(scripthash);
+
+            var extdata = new ThinNeo.InvokeTransData();
+            extdata.script = sb.ToArray();
+            extdata.gas = Neo.Fixed8.Zero;
+
+            var tran = new  ThinNeo.Transaction();
             tran.type = ThinNeo.TransactionType.ContractTransaction;
-            tran.version = 0;//0 or 1
-            tran.extdata = null;
+            tran.version = 0;
+            tran.extdata = extdata;
 
             tran.attributes = [];
-
+            tran.attributes[0] = new ThinNeo.Attribute();
+            tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;
+            tran.attributes[0].data = sb.ToArray();
             tran.inputs = [];
-            var scraddr: string = "";
-            utxos[assetid].sort((a, b) =>
-            {
-                return a.count.compareTo(b.count);
-            });
-            var us = utxos[assetid];
-            var count: Neo.Fixed8 = Neo.Fixed8.Zero;
-            for (var i = 0; i < us.length; i++)
-            {
-                var input = new ThinNeo.TransactionInput();
-                input["_addr"] = us[i].addr;//利用js的隨意性，臨時傳個值
-                tran.inputs.push(input);
-                count = count.add(us[i].count);
-                scraddr = us[i].addr;
-                if (count.compareTo(sendcount) > 0)
-                {
-                    break;
-                }
-            }
-            if (count.compareTo(sendcount) >= 0)//输入大于等于输出
-            {
-                tran.outputs = [];
-                //输出
-                if (sendcount.compareTo(Neo.Fixed8.Zero) > 0)
-                {
-                    var output = new ThinNeo.TransactionOutput();
-                    output.assetId = assetid.hexToBytes().reverse();
-                    output.value = sendcount;
-                    output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
-                    tran.outputs.push(output);
-                }
-
-                //找零
-                var change = count.subtract(sendcount);
-                if (change.compareTo(Neo.Fixed8.Zero) > 0)
-                {
-                    var outputchange = new ThinNeo.TransactionOutput();
-                    outputchange.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(scraddr);
-                    outputchange.value = change;
-                    outputchange.assetId = assetid.hexToBytes().reverse();
-                    tran.outputs.push(outputchange);
-
-                }
-            }
-            else
-            {
-                throw new Error("no enough money.");
-            }
+            tran.outputs = [];
+           
             return tran;
         }
 

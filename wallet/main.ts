@@ -12,6 +12,8 @@ namespace what
         panelAppChain:panel_AppChain;//修改链hash
         async start()
         {
+            Neo.Cryptography.RandomNumberGenerator.startCollectors();
+
             await CoinTool.initAllAsset();
             setTimeout(() => { this.update() }, 1000);
             var divpanel = document.getElementById("panel") as HTMLDivElement;

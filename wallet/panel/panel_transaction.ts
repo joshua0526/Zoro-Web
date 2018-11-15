@@ -26,7 +26,7 @@ namespace what
             this.panel.divContent.textContent = "";
 
         }
-        setTran(tran: ThinNeo.Transaction): void
+        setTran(tran: ThinNeo.Transaction, address:string): void
         {
             this.panel.divContent.textContent = "";
 
@@ -36,6 +36,7 @@ namespace what
             lightsPanel.QuickDom.addElement(this.panel, "hr");
 
             var inputAddrs: string[] = [];
+            inputAddrs.push(address);
             //輸入顯示
             
             lightsPanel.QuickDom.addSpan(this.panel, "inputcount=" + tran.inputs.length);
@@ -108,27 +109,6 @@ namespace what
             for (var i = 0; i < inputAddrs.length; i++)
             {
                 lightsPanel.QuickDom.addSpan(this.panel, "must witness[" + i + "]=" + inputAddrs[i]);
-                //let addr = inputAddrs[i];
-
-                //if (addr == this.main.panelLoadKey.address)//currkey
-                //{
-                //    var btnsign = lightsPanel.QuickDom.addButton(this.panel, "use current key sign it.");
-
-                //    btnsign.onclick = () =>
-                //    {
-                //        if (addr == this.main.panelLoadKey.address)//當前key地址
-                //        {//直接加私鑰
-
-                //        }
-                //    };
-                //}
-                //else
-                //{
-                //    var btnsign = lightsPanel.QuickDom.addButton(this.panel, "specsign.");
-                //    btnsign.onclick = () =>
-                //    {
-                //    };
-                //}
             }
             lightsPanel.QuickDom.addElement(this.panel, "hr");
 

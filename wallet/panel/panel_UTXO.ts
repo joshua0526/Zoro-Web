@@ -11,6 +11,7 @@ namespace what
         panel: lightsPanel.panel;
         main: Main;
         spanBCPHeight:HTMLSpanElement;
+        nep5:number;
         async init(main: Main)
         {
             this.main = main;
@@ -32,8 +33,8 @@ namespace what
 
         async refresh()
         {
-            var Nep5 = await WWW.rpc_getBalanceOf(this.main.panelState.chainHash, this.main.panelLoadKey.address);
-            this.spanBCPHeight.textContent = "BCP=" + Nep5;
+            this.nep5 = await WWW.rpc_getBalanceOf(this.main.panelState.chainHash, this.main.panelLoadKey.address);
+            this.spanBCPHeight.textContent = "BCP=" + this.nep5;
         }
     }
 }

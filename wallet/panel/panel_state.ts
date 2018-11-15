@@ -117,6 +117,7 @@
             this.chainHash = (this.select.childNodes[this.selectIndex] as HTMLOptionElement).value; 
             var height = await WWW.api_getHeight(this.chainHash);
             this.spanAPIHeight.textContent = "API height=" + height; 
+            this.main.panelUTXO.refresh();
         }
     }
 

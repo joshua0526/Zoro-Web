@@ -101,8 +101,8 @@ namespace what
                 var asset = (select.childNodes[select.selectedIndex] as HTMLOptionElement).text;
                 var assetid = CoinTool.name2assetID[asset];
                 var _count = Neo.Fixed8.parse(count.value);
-                var tran = CoinTool.makeTran(this.main.panelUTXO.assets, targetaddr, assetid, _count);
-                this.main.panelTransaction.setTran(tran);
+                var tran = CoinTool.makeTran(this.main.panelLoadKey.address, targetaddr, _count, assetid, WWW.ContractHash);
+                this.main.panelTransaction.setTran(tran, this.main.panelLoadKey.address);
             }
             lightsPanel.QuickDom.addElement(this.panel, "br");
         }
@@ -158,7 +158,7 @@ namespace what
                     var targetaddr = this.main.panelLoadKey.address;//给自己转账
                     var assetid = CoinTool.id_GAS;
                     var _count = Neo.Fixed8.Zero;//有数就行，是个gas以内都是不要钱的
-                    var tran = CoinTool.makeTran(this.main.panelUTXO.assets, targetaddr, assetid, _count);
+                    var tran = CoinTool.makeTran(this.main.panelLoadKey.address, targetaddr, _count, assetid, WWW.ContractHash);
 
                     tran.type = ThinNeo.TransactionType.InvocationTransaction;
                     tran.extdata = new ThinNeo.InvokeTransData();
@@ -174,7 +174,7 @@ namespace what
                     //如果估计gas用量>10,交易必须丢弃gas，否则智能合约执行会失败
                     (tran.extdata as ThinNeo.InvokeTransData).gas = Neo.Fixed8.fromNumber(1.0);
 
-                    this.main.panelTransaction.setTran(tran);
+                    this.main.panelTransaction.setTran(tran, this.main.panelLoadKey.address);
                 };
             }
         }
