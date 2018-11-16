@@ -52,7 +52,7 @@
                 var height = await WWW.api_getHeight(this.chainHash);
                 this.spanAPIHeight.textContent = "API height=" + height;
             }else{
-                this.chainHash = "0";
+                this.chainHash = "0000000000000000000000000000000000000000";
                 var height = await WWW.api_getHeight(this.chainHash);
                 this.spanAPIHeight.textContent = "API height=" + height;      
             }                

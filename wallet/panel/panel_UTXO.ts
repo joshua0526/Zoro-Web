@@ -33,8 +33,10 @@ namespace what
 
         async refresh()
         {
-            this.nep5 = await WWW.rpc_getBalanceOf(this.main.panelState.chainHash, this.main.panelLoadKey.address);
-            this.spanBCPHeight.textContent = "BCP=" + this.nep5;
+            if (this.main.panelLoadKey.address) {
+                this.nep5 = await WWW.rpc_getBalanceOf(this.main.panelState.chainHash, this.main.panelLoadKey.address);
+                this.spanBCPHeight.textContent = "BCP=" + this.nep5;
+            }           
         }
     }
 }
