@@ -44,8 +44,8 @@
             if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
                throw new Error("can not send zero.");           
             
-            var sb = new ThinNeo.ScriptBuilder();
             var array = [];
+            var sb = new ThinNeo.ScriptBuilder();            
            
             var randomBytes = new Uint8Array(32);            
             var key = Neo.Cryptography.RandomNumberGenerator.getRandomValues<Uint8Array>(randomBytes);
@@ -58,25 +58,28 @@
             sb.EmitParamJson(array);
             sb.EmitPushString("transfer");
             sb.EmitAppCall(assetid.hexToBytes().reverse());
-            var scripthash = sb.ToArray().toHexString();
+            // var scripthash = sb.ToArray().toHexString();
 
-            var postArray = [];
-            postArray.push(chainHash);
-            postArray.push(scripthash);
+            // var postArray = [];
+            // postArray.push(chainHash);
+            // postArray.push(scripthash);
 
             var extdata = new ThinNeo.InvokeTransData();
             extdata.script = sb.ToArray();
             extdata.gas = Neo.Fixed8.Zero;
 
             var tran = new  ThinNeo.Transaction();
-            tran.type = ThinNeo.TransactionType.ContractTransaction;
-            tran.version = 0;
+            tran.type = ThinNeo.TransactionType.InvocationTransaction;
+            tran.version = 1;
+            
             tran.extdata = extdata;
+
+            var scriptHash = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(address);
 
             tran.attributes = [];
             tran.attributes[0] = new ThinNeo.Attribute();
             tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;
-            tran.attributes[0].data = sb.ToArray();
+            tran.attributes[0].data = scriptHash;
             tran.inputs = [];
             tran.outputs = [];
            

@@ -90,17 +90,17 @@ namespace what
                 btn.onclick = async () =>
                 {
                     var data = tran.GetRawData();
-                    var rawData = ThinNeo.Helper.Bytes2String(data);
+                    var rawData = WWW.testBytesToString(data);
                     var result;
                     if (this.main.panelState.chainHash.length > 0) {
                         var postRawArray = [];
                         postRawArray.push(this.main.panelState.chainHash);
                         postRawArray.push(rawData);
-                        result = await WWW.rpc_postRawTransaction(postRawArray.toString());
+                        result = await WWW.rpc_postRawTransaction(postRawArray);
                     }else{
                         var postArray = [];
                         postArray.push(rawData);
-                        result = await WWW.rpc_postRawTransaction(postArray.toString());
+                        result = await WWW.rpc_postRawTransaction(postArray);
                     }
                     
                     if (result as boolean == true)

@@ -2,8 +2,10 @@
 {
     export class WWW
     {
-        static api: string = "http://115.159.53.39:20332/";
-        static rpc: string = "http://115.159.53.39:20332/";
+        // static api: string = "http://115.159.53.39:20332/";
+        // static rpc: string = "http://115.159.53.39:20332/";
+        static api: string = "http://127.0.0.1:20332/";
+        static rpc: string = "http://127.0.0.1:20332/";
         static rpcName: string = "";
 
         static blockHeight:number = 0;
@@ -34,9 +36,9 @@
             body["id"] = 1;
             body["method"] = method;
             var params = [];
-            for (var i = 0; i < _params.length; i++)
+            for (var i = 0; i < _params[0].length; i++)
             {
-                params.push(_params[i]);
+                params.push(_params[0][i]);
             }
             body["params"] = params;
             return body;
@@ -94,12 +96,12 @@
             var height = parseInt(r as string) - 1;
             return height;
         }
-        static async rpc_postRawTransaction(data: Uint8Array): Promise<boolean>
+        static async rpc_postRawTransaction(data: any): Promise<boolean>
         {
-            var postdata = WWW.makeRpcPostBody("sendrawtransaction", data.toHexString());
-            var result = await fetch(WWW.api, { "method": "post", "body": JSON.stringify(postdata) });
+            var postdata = WWW.makeRpcPostBody("sendrawtransaction", data);
+            var result = await fetch(WWW.api, { "method": "post", "body":JSON.stringify(postdata)});
             var json = await result.json();
-            var r = json["result"][0]["sendrawtransactionresult"] as boolean;
+            var r = json["result"] as boolean;
             return r;
         }
         static async  rpc_getStorage(scripthash: Uint8Array, key: Uint8Array): Promise<string>
@@ -134,5 +136,42 @@
             }
             return r;
         }    
+
+        static testBytesToString(data):string{
+            var sb = "";
+            for (var i = 0; i < data.length; i++){
+                var str = data[i].toString(16);
+                if (str.length == 1){
+                    str = "0" + str;
+                }
+                sb += str;
+            }
+            return sb;
+        }
+
+        static stringToByte(str){
+			var bytes = [];
+			var len, c;
+			len = str.length;
+			for(var i = 0; i < len; i++) {
+				c = str.charCodeAt(i);
+				if(c >= 0x010000 && c <= 0x10FFFF) {
+					bytes.push(((c >> 18) & 0x07) | 0xF0);
+					bytes.push(((c >> 12) & 0x3F) | 0x80);
+					bytes.push(((c >> 6) & 0x3F) | 0x80);
+					bytes.push((c & 0x3F) | 0x80);
+				} else if(c >= 0x000800 && c <= 0x00FFFF) {
+					bytes.push(((c >> 12) & 0x0F) | 0xE0);
+					bytes.push(((c >> 6) & 0x3F) | 0x80);
+					bytes.push((c & 0x3F) | 0x80);
+				} else if(c >= 0x000080 && c <= 0x0007FF) {
+					bytes.push(((c >> 6) & 0x1F) | 0xC0);
+					bytes.push((c & 0x3F) | 0x80);
+				} else {
+					bytes.push(c & 0xFF);
+				}
+			}
+			return bytes;
+		}
     }
 }

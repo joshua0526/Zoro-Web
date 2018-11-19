@@ -5,6 +5,7 @@ namespace what
     {
         transfer,
         DApp_WhoAmI,
+        CreateAppChain
     }
     export class panel_Function
     {
@@ -49,6 +50,11 @@ namespace what
                 {
                     this.setFunc(FuncTag.transfer);
                 };
+                var btn1 = lightsPanel.QuickDom.addButton(this.panel, "Transfer");
+                btn1.onclick = () =>
+                {
+                    this.setFunc(FuncTag.CreateAppChain);
+                };
             }
             if (tag == FuncTag.DApp_WhoAmI)
             {
@@ -58,6 +64,28 @@ namespace what
             {
                 var btn = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
                 btn.onclick = () =>
+                {
+                    this.setFunc(FuncTag.DApp_WhoAmI);
+                };
+                var btn1 = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
+                btn1.onclick = () =>
+                {
+                    this.setFunc(FuncTag.CreateAppChain);
+                };
+            }
+            if (tag == FuncTag.CreateAppChain)
+            {
+                lightsPanel.QuickDom.addSpan(this.panel, "CreateAppChain");
+            }
+            else
+            {
+                var btn = lightsPanel.QuickDom.addButton(this.panel, "CreateAppChain");
+                btn.onclick = () =>
+                {
+                    this.setFunc(FuncTag.transfer);
+                };
+                var btn1 = lightsPanel.QuickDom.addButton(this.panel, "CreateAppChain");
+                btn1.onclick = () =>
                 {
                     this.setFunc(FuncTag.DApp_WhoAmI);
                 };
@@ -72,11 +100,15 @@ namespace what
             {
                 this.initDApp_WhoAmI();
             }
+            if (tag == FuncTag.CreateAppChain)
+            {
+                this.initCreateAppChain();
+            }
         }
         initTransfer(): void
         {
             lightsPanel.QuickDom.addSpan(this.panel, "Target");
-            var target = lightsPanel.QuickDom.addTextInput(this.panel, "AdzQq1DmnHq86yyDUkU3jKdHwLUe2MLAVv");
+            var target = lightsPanel.QuickDom.addTextInput(this.panel, "AMtwRe476ooSmJwVbD5z6J2Jw2ZzzQUFqY");
             lightsPanel.QuickDom.addElement(this.panel, "br");
 
             lightsPanel.QuickDom.addSpan(this.panel, "Asset Type:");
@@ -91,7 +123,7 @@ namespace what
             lightsPanel.QuickDom.addElement(this.panel, "br");
 
             lightsPanel.QuickDom.addSpan(this.panel, "Count");
-            var count = lightsPanel.QuickDom.addTextInput(this.panel, "");
+            var count = lightsPanel.QuickDom.addTextInput(this.panel, "10000");
             lightsPanel.QuickDom.addElement(this.panel, "br");
 
             var btn = lightsPanel.QuickDom.addButton(this.panel, "MakeTransaction");
@@ -104,6 +136,20 @@ namespace what
                 var tran = CoinTool.makeTran(this.main.panelLoadKey.address, targetaddr, _count, assetid, WWW.ContractHash);
                 this.main.panelTransaction.setTran(tran, this.main.panelLoadKey.address);
             }
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+        }
+
+        initCreateAppChain():void{
+            lightsPanel.QuickDom.addSpan(this.panel, "AppChainName:");
+            var AppChainName = lightsPanel.QuickDom.addTextInput(this.panel, "");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "WIF:");
+            var AppChainName = lightsPanel.QuickDom.addTextInput(this.panel, "");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "ChainHash:Fixed.Zero");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "validators Length:");
+            
             lightsPanel.QuickDom.addElement(this.panel, "br");
         }
 

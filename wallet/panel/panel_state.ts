@@ -59,7 +59,7 @@
 
             if (height > WWW.blockHeight){
                 WWW.blockHeight = height;
-                AppChainTool.initAllAppChain();
+                AppChainTool.updateAllAppChain();
                 if (WWW.chainHashLength < AppChainTool.appChainLength){
                     WWW.chainHashLength = AppChainTool.appChainLength;
                     this.updateAppChain();

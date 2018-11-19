@@ -14,6 +14,20 @@ namespace what
                 this.chainName2Hash[chainName] = chainHash;
                 this.appChainLength++;
             }  
+            WWW.chainHashLength = this.appChainLength;
+            return this.chainName2Hash;          
+        }
+
+        static async updateAllAppChain(){
+            var allChainHash = await WWW.api_getAllAppChain();
+            this.chainName2Hash["AppRoot"] = "0000000000000000000000000000000000000000";
+            this.appChainLength = 1; 
+            for (var a in allChainHash){
+                var chainHash = allChainHash[a];
+                var chainName = await WWW.api_getAppChainName(chainHash);
+                this.chainName2Hash[chainName] = chainHash;
+                this.appChainLength++;
+            } 
             return this.chainName2Hash;          
         }
 
