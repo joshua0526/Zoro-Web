@@ -31,6 +31,52 @@ namespace what
             return this.chainName2Hash;          
         }
 
+        static makeTran(name:string, pubkey:Uint8Array, validators:string[], seedList:string[], out:{}): ThinNeo.Transaction
+        {                     
+            var array = [];
+            var sb = new ThinNeo.ScriptBuilder();            
+            for (var i = 0; i < validators.length; i++){
+              sb.EmitPushString(validators[i]);
+            }
+            sb.EmitPushNumber(new Neo.BigInteger(validators.length));
+            for (var i = 0; i < seedList.length; i++){
+              sb.EmitPushString(seedList[i]);
+            }
+            sb.EmitPushNumber(new Neo.BigInteger(seedList.length));
+            var time = Math.floor(Date.now() / 1000);
+            sb.EmitPushNumber(new Neo.BigInteger(time));
+            sb.EmitPushBytes(Neo.Cryptography.ECPoint.fromUint8Array(pubkey, Neo.Cryptography.ECCurve.secp256r1).encodePoint(true));
+            sb.EmitPushString(name);
+            
+            var chainHash = new Neo.Uint160(Neo.Cryptography.RIPEMD160.computeHash(Neo.Cryptography.Sha256.computeHash(sb.ToArray()))); 
+            sb.EmitPushBytes(chainHash.toArray());
+            sb.EmitSysCall("Zoro.AppChain.Create");  
+            
+            out["ChainHash"] = chainHash;
+
+            var extdata = new ThinNeo.InvokeTransData();
+            extdata.script = sb.ToArray();
+            extdata.gas = Neo.Fixed8.Zero;
+
+            var tran = new  ThinNeo.Transaction();
+            tran.type = ThinNeo.TransactionType.InvocationTransaction;
+            tran.version = 1;
+            
+            tran.extdata = extdata;
+
+            var scriptHash = ThinNeo.Helper.GetPublicKeyScriptHashFromPublicKey(pubkey);
+
+            tran.attributes = [];
+            tran.attributes[0] = new ThinNeo.Attribute();
+            tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;
+            tran.attributes[0].data = scriptHash;
+            tran.inputs = [];
+            tran.outputs = [];
+           
+            return tran;
+        }
+
+
         static pubKey_List:{[id:string]:string} = {};
         static ip_List:{[id:string]:string} = {};
 
@@ -39,6 +85,33 @@ namespace what
                 this.pubKey_List["pubKey" + (i + 1)] = this.Node_List["node" + (i + 1)]["pubkey"];
                 this.ip_List["ip" + (i + 1)] = this.Node_List["node" + (i + 1)]["ip"];
             }         
+        }
+
+        static createSelect(panel, type:string, num:number){
+            var select = document.createElement("select");
+            panel.divContent.appendChild(select);
+            switch(type){
+              case "pubkey":
+                for (var name in AppChainTool.pubKey_List)
+                {
+                  var sitem = document.createElement("option");
+                  sitem.text = name;
+                  sitem.value = AppChainTool.pubKey_List[name];
+                  select.appendChild(sitem);
+                }                
+              break;
+              case "ip":
+                for (var name in AppChainTool.ip_List)
+                {
+                  var sitem = document.createElement("option");
+                  sitem.text = name;
+                  sitem.value = AppChainTool.ip_List[name];
+                  select.appendChild(sitem);
+                }
+              break;
+            }     
+            select.selectedIndex = num - 1;
+            return select;       
         }
 
         static Node_List = {

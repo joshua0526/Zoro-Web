@@ -30,8 +30,6 @@ namespace what
             this.panel.onFloat();
             this.panel.divContent.textContent = "";
 
-
-
             lightsPanel.QuickDom.addSpan(this.panel,"Load NEP6 File");
 
             var file = document.createElement("input");

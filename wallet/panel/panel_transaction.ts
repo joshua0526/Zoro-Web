@@ -26,6 +26,74 @@ namespace what
             this.panel.divContent.textContent = "";
 
         }
+        setTranAppChain(tran:ThinNeo.Transaction, pubkey:string[], ip:string[], address:string, ChainHash:Neo.Uint160):void{
+            this.panel.divContent.textContent = "";
+            lightsPanel.QuickDom.addSpan(this.panel, "type=" + ThinNeo.TransactionType[tran.type].toString());
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "version=" + tran.version);
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "AppChainHash=" + ChainHash);
+            lightsPanel.QuickDom.addElement(this.panel, "hr");
+
+            var inputAddrs = [];
+            inputAddrs.push(address);
+
+            //輸入顯示           
+            lightsPanel.QuickDom.addSpan(this.panel, "validators length=" + pubkey.length);            
+            for (var i = 0; i < pubkey.length; i++){
+                lightsPanel.QuickDom.addElement(this.panel, "br");
+                lightsPanel.QuickDom.addSpan(this.panel, "validator" + (i + 1) + "=" + pubkey[i]);               
+            }
+            lightsPanel.QuickDom.addElement(this.panel, "hr");
+
+            lightsPanel.QuickDom.addSpan(this.panel, "seedList length=" + ip.length);            
+            for (var i = 0; i < ip.length; i++){
+                lightsPanel.QuickDom.addElement(this.panel, "br");
+                lightsPanel.QuickDom.addSpan(this.panel, "ip" + (i + 1) + "=" + ip[i]);               
+            }
+            lightsPanel.QuickDom.addElement(this.panel, "hr");
+
+            // if (tran.type == ThinNeo.TransactionType.InvocationTransaction && tran.extdata != null)
+            // {
+            //     var scriptdata = tran.extdata as ThinNeo.InvokeTransData;
+            //     lightsPanel.QuickDom.addSpan(this.panel,"call script:");
+            //     var ops = ThinNeo.Compiler.Avm2Asm.Trans(scriptdata.script);
+            //     for (var i = 0; i < ops.length;i++)
+            //     {
+            //         lightsPanel.QuickDom.addSpan(this.panel, ops[i].toString());
+            //         lightsPanel.QuickDom.addElement(this.panel, "br");
+            //     }
+            // }
+
+            //transaction info
+            lightsPanel.QuickDom.addElement(this.panel, "hr");
+
+            let msg = tran.GetMessage();
+            var msglen = msg.length;
+            var txid = tran.GetHash().toHexString();
+            lightsPanel.QuickDom.addSpan(this.panel, "--this TXLen=" + msglen);
+            lightsPanel.QuickDom.addSpan(this.panel, "--this TXID=" + txid);
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+
+            for (var i = 0; i < inputAddrs.length; i++)
+            {
+                lightsPanel.QuickDom.addSpan(this.panel, "must witness[" + i + "]=" + inputAddrs[i]);
+            }
+            lightsPanel.QuickDom.addElement(this.panel, "hr");
+
+            var btnsign = lightsPanel.QuickDom.addButton(this.panel, "Sign");
+            btnsign.onclick = () =>
+            {
+                this.panel.hide();
+                tran.witnesses = [];
+                this.main.panelSign.setTran(tran, inputAddrs);
+                this.main.panelSign.panel.show();
+            }
+            lightsPanel.QuickDom.addElement(this.panel, "hr");
+
+            lightsPanel.QuickDom.addSpan(this.panel, msg.toHexString());
+        }
+
         setTran(tran: ThinNeo.Transaction, address:string): void
         {
             this.panel.divContent.textContent = "";
@@ -122,7 +190,7 @@ namespace what
             }
             lightsPanel.QuickDom.addElement(this.panel, "hr");
 
-            lightsPanel.QuickDom.addSpan(this.panel,msg.toHexString());
+            lightsPanel.QuickDom.addSpan(this.panel, msg.toHexString());
         }
 
     }

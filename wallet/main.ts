@@ -26,15 +26,15 @@ namespace what
             this.panelLoadKey = new panel_LoadKey();
             this.panelLoadKey.init(this);
 
-            this.panelFunction = new panel_Function();
-            this.panelFunction.init(this);
-
             this.panelTransaction = new panel_Transaction();
             this.panelTransaction.init(this);
             this.panelSign = new panel_Sign();
             this.panelSign.init(this);
             this.panelSign.panel.hide();
 
+            this.panelFunction = new panel_Function();
+            this.panelFunction.init(this);
+           
             this.panelUTXO = new panel_UTXO();
             this.panelUTXO.init(this);
        }

@@ -2,8 +2,8 @@
 {
     export class WWW
     {
-        // static api: string = "http://115.159.53.39:20332/";
-        // static rpc: string = "http://115.159.53.39:20332/";
+        // static api: string = "http://118.89.149.43:20332/";
+        // static rpc: string = "http://118.89.149.43:20332/";
         static api: string = "http://127.0.0.1:20332/";
         static rpc: string = "http://127.0.0.1:20332/";
         static rpcName: string = "";

@@ -24,77 +24,69 @@ namespace what
             this.panel.divRoot.style.left = "30px";
             this.panel.divRoot.style.top = "200px";
             this.panel.floatWidth = 300;
-            this.panel.floatHeight = 350;
+            this.panel.floatHeight = 400;
             this.panel.canDrag = true;
             this.panel.canScale = true;
 
             this.panel.onFloat();
 
-
+            AppChainTool.initAppChainSelectList();
+            
             this.setFunc(FuncTag.transfer);
         }
-
 
         setFunc(tag: FuncTag): void
         {
             this.panel.divContent.textContent = "";
 
-            if (tag == FuncTag.transfer)
-            {
-                lightsPanel.QuickDom.addSpan(this.panel, "Transfer");
-            }
-            else
-            {
-                var btn = lightsPanel.QuickDom.addButton(this.panel, "Transfer");
-                btn.onclick = () =>
-                {
-                    this.setFunc(FuncTag.transfer);
-                };
-                var btn1 = lightsPanel.QuickDom.addButton(this.panel, "Transfer");
-                btn1.onclick = () =>
-                {
-                    this.setFunc(FuncTag.CreateAppChain);
-                };
-            }
-            if (tag == FuncTag.DApp_WhoAmI)
-            {
-                lightsPanel.QuickDom.addSpan(this.panel, "DApp_WhoAmI");
-            }
-            else
-            {
-                var btn = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
-                btn.onclick = () =>
-                {
-                    this.setFunc(FuncTag.DApp_WhoAmI);
-                };
-                var btn1 = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
-                btn1.onclick = () =>
-                {
-                    this.setFunc(FuncTag.CreateAppChain);
-                };
-            }
-            if (tag == FuncTag.CreateAppChain)
-            {
-                lightsPanel.QuickDom.addSpan(this.panel, "CreateAppChain");
-            }
-            else
-            {
-                var btn = lightsPanel.QuickDom.addButton(this.panel, "CreateAppChain");
-                btn.onclick = () =>
-                {
-                    this.setFunc(FuncTag.transfer);
-                };
-                var btn1 = lightsPanel.QuickDom.addButton(this.panel, "CreateAppChain");
-                btn1.onclick = () =>
-                {
-                    this.setFunc(FuncTag.DApp_WhoAmI);
-                };
-            }
+            switch(tag){
+                case FuncTag.transfer:
+                    this.main.panelTransaction.panel.floatHeight = 600;
+                    lightsPanel.QuickDom.addSpan(this.panel, "Transfer");
+                    var btn = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
+                    btn.onclick = () =>
+                    {
+                        this.setFunc(FuncTag.DApp_WhoAmI);
+                    };
+                    var btn1 = lightsPanel.QuickDom.addButton(this.panel, "CreateAppChain");
+                    btn1.onclick = () =>
+                    {
+                        this.setFunc(FuncTag.CreateAppChain);
+                    };
+                break;
+                case FuncTag.DApp_WhoAmI:
+                    this.main.panelTransaction.panel.floatHeight = 600;
+                    var btn = lightsPanel.QuickDom.addButton(this.panel, "Transfer");
+                    btn.onclick = () =>
+                    {
+                        this.setFunc(FuncTag.transfer);
+                    };
+                    lightsPanel.QuickDom.addSpan(this.panel, "DApp_WhoAmI");                    
+                    var btn1 = lightsPanel.QuickDom.addButton(this.panel, "CreateAppChain");
+                    btn1.onclick = () =>
+                    {
+                        this.setFunc(FuncTag.CreateAppChain);
+                    };
+                break;
+                case FuncTag.CreateAppChain:
+                    this.main.panelTransaction.panel.floatHeight = 1000;
+                    var btn = lightsPanel.QuickDom.addButton(this.panel, "transfer");
+                    btn.onclick = () =>
+                    {
+                        this.setFunc(FuncTag.transfer);
+                    };
+                    var btn1 = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
+                    btn1.onclick = () =>
+                    {
+                        this.setFunc(FuncTag.DApp_WhoAmI);
+                    };
+                    lightsPanel.QuickDom.addSpan(this.panel, "CreateAppChain");
+                break;
+            }            
             lightsPanel.QuickDom.addElement(this.panel, "hr");
             if (tag == FuncTag.transfer)
             {
                 this.initTransfer();
-
             }
             if (tag == FuncTag.DApp_WhoAmI)
             {
@@ -139,17 +131,62 @@ namespace what
             lightsPanel.QuickDom.addElement(this.panel, "br");
         }
 
-        initCreateAppChain():void{
+        initCreateAppChain():void{                     
             lightsPanel.QuickDom.addSpan(this.panel, "AppChainName:");
-            var AppChainName = lightsPanel.QuickDom.addTextInput(this.panel, "");
-            lightsPanel.QuickDom.addElement(this.panel, "br");
-            lightsPanel.QuickDom.addSpan(this.panel, "WIF:");
-            var AppChainName = lightsPanel.QuickDom.addTextInput(this.panel, "");
+            var AppChainName = lightsPanel.QuickDom.addTextInput(this.panel, "RootName");
             lightsPanel.QuickDom.addElement(this.panel, "br");
             lightsPanel.QuickDom.addSpan(this.panel, "ChainHash:Fixed.Zero");
             lightsPanel.QuickDom.addElement(this.panel, "br");
-            lightsPanel.QuickDom.addSpan(this.panel, "validators Length:");
-            
+            lightsPanel.QuickDom.addSpan(this.panel, "validator1:");
+            var pubkey1 = AppChainTool.createSelect(this.panel, "pubkey", 1);
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "validator2:");
+            var pubkey2 = AppChainTool.createSelect(this.panel, "pubkey", 2);
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "validator3:");
+            var pubkey3 = AppChainTool.createSelect(this.panel, "pubkey", 3);
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "validator4:");
+            var pubkey4 = AppChainTool.createSelect(this.panel, "pubkey", 4);
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "seed1:");
+            var ip1 = AppChainTool.createSelect(this.panel, "ip", 1);
+            lightsPanel.QuickDom.addSpan(this.panel, "port1:");
+            var seed1 = lightsPanel.QuickDom.addTextInput(this.panel, "58888");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "seed2:");
+            var ip2 = AppChainTool.createSelect(this.panel, "ip", 2);
+            lightsPanel.QuickDom.addSpan(this.panel, "port2:");
+            var seed1 = lightsPanel.QuickDom.addTextInput(this.panel, "58888");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "seed3:");
+            var ip3 = AppChainTool.createSelect(this.panel, "ip", 3);
+            lightsPanel.QuickDom.addSpan(this.panel, "port3:");
+            var seed1 = lightsPanel.QuickDom.addTextInput(this.panel, "58888");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+            lightsPanel.QuickDom.addSpan(this.panel, "seed4:");
+            var ip4 = AppChainTool.createSelect(this.panel, "ip", 4);
+            lightsPanel.QuickDom.addSpan(this.panel, "port4:");
+            var seed1 = lightsPanel.QuickDom.addTextInput(this.panel, "58888");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+
+            var btn = lightsPanel.QuickDom.addButton(this.panel, "createAppChain");
+            btn.onclick = () =>
+            {
+                var name = AppChainName.value;
+                var pubkey = [(pubkey1.childNodes[pubkey1.selectedIndex] as HTMLOptionElement).value,
+                (pubkey2.childNodes[pubkey2.selectedIndex] as HTMLOptionElement).value,
+                (pubkey3.childNodes[pubkey3.selectedIndex] as HTMLOptionElement).value,
+                (pubkey4.childNodes[pubkey4.selectedIndex] as HTMLOptionElement).value];
+                var ip = [(ip1.childNodes[ip1.selectedIndex] as HTMLOptionElement).value,
+                (ip2.childNodes[ip2.selectedIndex] as HTMLOptionElement).value,
+                (ip3.childNodes[ip3.selectedIndex] as HTMLOptionElement).value,
+                (ip4.childNodes[ip4.selectedIndex] as HTMLOptionElement).value];
+
+                var ChainHash = {};
+                var tran = AppChainTool.makeTran(name, this.main.panelLoadKey.pubkey, pubkey,ip, ChainHash);
+                this.main.panelTransaction.setTranAppChain(tran, pubkey, ip, this.main.panelLoadKey.address, ChainHash["ChainHash"]);
+            }
             lightsPanel.QuickDom.addElement(this.panel, "br");
         }
 
