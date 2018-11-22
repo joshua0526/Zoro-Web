@@ -67,5 +67,11 @@
             return e;
         }
 
+        static addCheckBox(panel: panel | HTMLDivElement, text: string = ""):HTMLInputElement{
+            var e = QuickDom.addElement(panel, "input") as HTMLInputElement;
+            e.type = "checkbox";
+            e.value = text;
+            return e;
+        }
     }
 }

@@ -115,6 +115,20 @@
             return r["storagevalue"];
         }
 
+        static async rpc_invokeScript(params:any){
+            var postdata = WWW.makeRpcPostBody("invokescript", params);
+            var result = await fetch(WWW.api, {"method":"post", "body":JSON.stringify(postdata)});
+            var json = await result.json();
+            return json["result"];
+        }
+
+        static async rpc_sendrawtransaction(params:any){
+            var postdata = WWW.makeRpcPostBody("sendrawtransaction",params);
+            var result = await fetch(WWW.api, {"method":"post", "body":JSON.stringify(postdata)});
+            var json = await result.json();
+            return json;
+        }
+
         static async rpc_getBalanceOf(chainHash:string, address:string){
             var sb = new ThinNeo.ScriptBuilder();
             var array = [];
@@ -172,6 +186,23 @@
 				}
 			}
 			return bytes;
-		}
+        }
+        
+        static makeTran(address:string){
+            var tran = new  ThinNeo.Transaction();
+            tran.type = ThinNeo.TransactionType.InvocationTransaction;
+            tran.version = 1;           
+
+            var scriptHash = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(address);
+
+            tran.attributes = [];
+            tran.attributes[0] = new ThinNeo.Attribute();
+            tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;
+            tran.attributes[0].data = scriptHash;
+            tran.inputs = [];
+            tran.outputs = [];
+           
+            return tran;
+        }
     }
 }

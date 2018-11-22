@@ -125,6 +125,7 @@ declare namespace lightsPanel {
         static addTextInput(panel: panel | HTMLDivElement, text?: string): HTMLInputElement;
         static addTextInputPassword(panel: panel | HTMLDivElement, text?: string): HTMLInputElement;
         static addButton(panel: panel | HTMLDivElement, text?: string): HTMLButtonElement;
+        static addCheckBox(panel: panel | HTMLDivElement, text?: string): HTMLInputElement;
     }
 }
 declare namespace lightsPanel {
@@ -179,6 +180,7 @@ declare namespace what {
         panel: lightsPanel.panel;
         main: Main;
         spanBCPHeight: HTMLSpanElement;
+        nep5: number;
         init(main: Main): Promise<void>;
         refresh(): Promise<void>;
     }
@@ -186,7 +188,8 @@ declare namespace what {
 declare namespace what {
     enum FuncTag {
         transfer = 0,
-        DApp_WhoAmI = 1
+        DApp_WhoAmI = 1,
+        CreateAppChain = 2
     }
     class panel_Function {
         constructor();
@@ -195,7 +198,8 @@ declare namespace what {
         init(main: Main): void;
         setFunc(tag: FuncTag): void;
         initTransfer(): void;
-        initDApp_WhoAmI(): void;
+        initCreateAppChain(): void;
+        SendContract(): void;
     }
 }
 declare namespace what {
@@ -246,7 +250,8 @@ declare namespace what {
         panel: lightsPanel.panel;
         main: Main;
         init(main: Main): void;
-        setTran(tran: ThinNeo.Transaction): void;
+        setTranAppChain(tran: ThinNeo.Transaction, pubkey: string[], ip: string[], address: string, ChainHash: Neo.Uint160): void;
+        setTran(tran: ThinNeo.Transaction, address: string): void;
     }
 }
 declare namespace what {
@@ -258,6 +263,74 @@ declare namespace what {
         static initAllAppChain(): Promise<{
             [id: string]: string;
         }>;
+        static updateAllAppChain(): Promise<{
+            [id: string]: string;
+        }>;
+        static makeTran(name: string, pubkey: Uint8Array, validators: string[], seedList: string[], out: {}): ThinNeo.Transaction;
+        static pubKey_List: {
+            [id: string]: string;
+        };
+        static ip_List: {
+            [id: string]: string;
+        };
+        static initAppChainSelectList(): void;
+        static createSelect(panel: any, type: string, num: number): HTMLSelectElement;
+        static Node_List: {
+            "node1": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node2": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node3": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node4": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node5": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node6": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node7": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node8": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+            "node9": {
+                "ip": string;
+                "wallet": string;
+                "address": string;
+                "pubkey": string;
+            };
+        };
     }
 }
 declare namespace what {
@@ -271,7 +344,7 @@ declare namespace what {
             [id: string]: string;
         };
         static initAllAsset(): Promise<void>;
-        static makeTran(utxos: {}, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): ThinNeo.Transaction;
+        static makeTran(address: string, targetaddr: string, sendcount: Neo.Fixed8, assetid: string, chainHash: string): ThinNeo.Transaction;
     }
 }
 declare namespace what {
@@ -290,8 +363,13 @@ declare namespace what {
         static api_getAllAppChain(): Promise<any>;
         static api_getAppChainName(chainHash: string): Promise<any>;
         static rpc_getHeight(): Promise<number>;
-        static rpc_postRawTransaction(data: Uint8Array): Promise<boolean>;
+        static rpc_postRawTransaction(data: any): Promise<boolean>;
         static rpc_getStorage(scripthash: Uint8Array, key: Uint8Array): Promise<string>;
+        static rpc_invokeScript(params: any): Promise<any>;
+        static rpc_sendrawtransaction(params: any): Promise<any>;
         static rpc_getBalanceOf(chainHash: string, address: string): Promise<any>;
+        static testBytesToString(data: any): string;
+        static stringToByte(str: any): any[];
+        static makeTran(address: string): ThinNeo.Transaction;
     }
 }

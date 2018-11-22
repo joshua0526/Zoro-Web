@@ -43,7 +43,7 @@ namespace what
                 case FuncTag.transfer:
                     this.main.panelTransaction.panel.floatHeight = 600;
                     lightsPanel.QuickDom.addSpan(this.panel, "Transfer");
-                    var btn = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
+                    var btn = lightsPanel.QuickDom.addButton(this.panel, "SendContract");
                     btn.onclick = () =>
                     {
                         this.setFunc(FuncTag.DApp_WhoAmI);
@@ -61,7 +61,7 @@ namespace what
                     {
                         this.setFunc(FuncTag.transfer);
                     };
-                    lightsPanel.QuickDom.addSpan(this.panel, "DApp_WhoAmI");                    
+                    lightsPanel.QuickDom.addSpan(this.panel, "SendContract");                    
                     var btn1 = lightsPanel.QuickDom.addButton(this.panel, "CreateAppChain");
                     btn1.onclick = () =>
                     {
@@ -75,7 +75,7 @@ namespace what
                     {
                         this.setFunc(FuncTag.transfer);
                     };
-                    var btn1 = lightsPanel.QuickDom.addButton(this.panel, "DApp_WhoAmI");
+                    var btn1 = lightsPanel.QuickDom.addButton(this.panel, "SendContract");
                     btn1.onclick = () =>
                     {
                         this.setFunc(FuncTag.DApp_WhoAmI);
@@ -90,7 +90,7 @@ namespace what
             }
             if (tag == FuncTag.DApp_WhoAmI)
             {
-                this.initDApp_WhoAmI();
+                this.SendContract();
             }
             if (tag == FuncTag.CreateAppChain)
             {
@@ -190,76 +190,109 @@ namespace what
             lightsPanel.QuickDom.addElement(this.panel, "br");
         }
 
-        initDApp_WhoAmI(): void
+        SendContract(): void
         {
             var pkey = this.main.panelLoadKey.pubkey;
-            lightsPanel.QuickDom.addSpan(this.panel, "(No need key)");
-            lightsPanel.QuickDom.addElement(this.panel, "br");
-            lightsPanel.QuickDom.addSpan(this.panel, "Target");
-            var target = lightsPanel.QuickDom.addTextInput(this.panel, pkey == null ? "AdzQq1DmnHq86yyDUkU3jKdHwLUe2MLAVv" : this.main.panelLoadKey.address);
-            lightsPanel.QuickDom.addElement(this.panel, "br");
-            var btn = lightsPanel.QuickDom.addButton(this.panel, "getName");
-
+            
+            lightsPanel.QuickDom.addSpan(this.panel, "name:");
+            var name = lightsPanel.QuickDom.addTextInput(this.panel, "new Contract");
             lightsPanel.QuickDom.addElement(this.panel, "br");
 
-            var result = lightsPanel.QuickDom.addSpan(this.panel, "result=");
+            lightsPanel.QuickDom.addSpan(this.panel, "version:");
+            var version = lightsPanel.QuickDom.addTextInput(this.panel, "1.0");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
 
-            btn.onclick = async () =>
+            lightsPanel.QuickDom.addSpan(this.panel, "auther:");
+            var auther = lightsPanel.QuickDom.addTextInput(this.panel, "auther");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+
+            lightsPanel.QuickDom.addSpan(this.panel, "email:");
+            var email = lightsPanel.QuickDom.addTextInput(this.panel, "123@qq.com");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+
+            lightsPanel.QuickDom.addSpan(this.panel, "description:");
+            var description = lightsPanel.QuickDom.addTextInput(this.panel, "description");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+
+            lightsPanel.QuickDom.addSpan(this.panel, "need_storage:");
+            var need_storage = lightsPanel.QuickDom.addCheckBox(this.panel, "need_storage");
+            lightsPanel.QuickDom.addSpan(this.panel, "need_canCharge:");
+            var need_canCharge = lightsPanel.QuickDom.addCheckBox(this.panel, "need_canCharge");
+            lightsPanel.QuickDom.addElement(this.panel, "br");
+
+
+            lightsPanel.QuickDom.addSpan(this.panel, ".avm File");
+            var file = document.createElement("input");
+            this.panel.divContent.appendChild(file);
+            file.type = "file";
+
+            var reader = new FileReader();
+            reader.onload = (e: Event) =>
             {
-                //dapp 方式1 ，GetStorage  ，方式2 invokeScript，查NEP5余额就是
-                var targetaddr = target.value;
-                var scriptaddress = "0x42832a25cf11d0ceee5629cb8b4daee9bac207ca";
-                var key = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
-                var script = scriptaddress.hexToBytes();//script 要反序
-                var r = await WWW.rpc_getStorage(script, key);
-                if (r == null || r == undefined)
-                {
-                    result.textContent = "no name";
-                }
-                else
-                {
-                    var hex = r.hexToBytes();
-                    result.textContent = "name=" + ThinNeo.Helper.Bytes2String(hex);
-                }
-            };
-
-
-            lightsPanel.QuickDom.addElement(this.panel, "hr");
-
-            if (pkey != null)
-            {
-                var pkeyhash = ThinNeo.Helper.GetPublicKeyScriptHashFromPublicKey(pkey);
-                lightsPanel.QuickDom.addSpan(this.panel, "(need key)");
-                lightsPanel.QuickDom.addElement(this.panel, "br");
-                lightsPanel.QuickDom.addSpan(this.panel, "cur addr=" + this.main.panelLoadKey.address);
-                lightsPanel.QuickDom.addElement(this.panel, "br");
-                var inputName = lightsPanel.QuickDom.addTextInput(this.panel, "");
-                lightsPanel.QuickDom.addElement(this.panel, "br");
-                var btnSetName = lightsPanel.QuickDom.addButton(this.panel, "setName");
-                btnSetName.onclick = () =>
-                {
-                    var targetaddr = this.main.panelLoadKey.address;//给自己转账
-                    var assetid = CoinTool.id_GAS;
-                    var _count = Neo.Fixed8.Zero;//有数就行，是个gas以内都是不要钱的
-                    var tran = CoinTool.makeTran(this.main.panelLoadKey.address, targetaddr, _count, assetid, WWW.ContractHash);
-
-                    tran.type = ThinNeo.TransactionType.InvocationTransaction;
-                    tran.extdata = new ThinNeo.InvokeTransData();
-                    let script = null;
+                var parameter__list = "0710".hexToBytes();
+                var return_type = "05".hexToBytes();
+                var ContractAvm = reader.result as ArrayBuffer;                
+                var storage = 1;
+                var nep4 = 0;
+                var canCharge = 4;
+                var btn = document.createElement("button");
+                btn.onclick = async () => {
                     var sb = new ThinNeo.ScriptBuilder();
-                    var scriptaddress = "0x42832a25cf11d0ceee5629cb8b4daee9bac207ca".hexToBytes().reverse();
-                    sb.EmitPushString(inputName.value);//先推第二个参数，新名字
-                    sb.EmitPushBytes(this.main.panelLoadKey.pubkey);//再推第二个参数，自己的公钥
-                    sb.EmitAppCall(scriptaddress);
-                    (tran.extdata as ThinNeo.InvokeTransData).script = sb.ToArray();
-                    //估计一个gas用量
-                    //如果估计gas用量少了，智能合约执行会失败。
-                    //如果估计gas用量>10,交易必须丢弃gas，否则智能合约执行会失败
-                    (tran.extdata as ThinNeo.InvokeTransData).gas = Neo.Fixed8.fromNumber(1.0);
+                    storage = need_storage.checked?storage:0;
+                    nep4 = nep4;
+                    canCharge = need_canCharge.checked?canCharge:4;
+                    var ss = storage|nep4|canCharge;
+                    sb.EmitPushString(description.value); 
+                    sb.EmitPushString(email.value); 
+                    sb.EmitPushString(auther.value);
+                    sb.EmitPushString(version.value); 
+                    sb.EmitPushString(name.value);   
+                    sb.EmitPushNumber(new Neo.BigInteger(ss));
+                    sb.EmitPushBytes(return_type);
+                    sb.EmitPushBytes(parameter__list);
+                    var contract = new Uint8Array(ContractAvm);
+                    sb.EmitPushBytes(contract);
+                    sb.EmitSysCall("Neo.Contract.Create"); 
+                    
+                    var scriptPublish = sb.ToArray().toHexString();
+                    var postArray = [];
+                    postArray.push(this.main.panelState.chainHash);
+                    postArray.push(scriptPublish);
+                    var result = await WWW.rpc_invokeScript(postArray);
 
-                    this.main.panelTransaction.setTran(tran, this.main.panelLoadKey.address);
-                };
-            }
+                    var consume = result["gas_consumed"];
+                    var gas_consumed = parseInt(consume);
+
+                    var extdata = new ThinNeo.InvokeTransData();
+                    extdata.script = sb.ToArray();
+                    extdata.gas = Neo.Fixed8.Zero;
+
+                    var tran = WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pkey));
+                    tran.extdata = extdata;
+
+                    var msg = tran.GetMessage();
+                    var signdata = ThinNeo.Helper.Sign(msg, this.main.panelLoadKey.prikey);
+                    tran.AddWitness(signdata, pkey, ThinNeo.Helper.GetAddressFromPublicKey(pkey));
+                    var data = tran.GetRawData();
+                    var rawdata = data.toHexString();
+
+                    var postRawArray = [];
+                    postRawArray.push(this.main.panelState.chainHash);
+                    postRawArray.push(rawdata);
+                    var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
+                    alert(JSON.stringify(postResult));
+                }                
+                lightsPanel.QuickDom.addElement(this.panel, "br");
+                btn.textContent = "send";
+                this.panel.divContent.appendChild(btn);
+            }   
+            file.onchange = (ev: Event) =>
+            {
+                if (file.files[0].name.includes(".avm"))
+                {
+                    reader.readAsArrayBuffer(file.files[0]);
+                }
+            }      
         }
     }
 
